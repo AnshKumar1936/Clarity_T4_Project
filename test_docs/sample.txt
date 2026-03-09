@@ -1,0 +1,13 @@
+This is a sample text document for testing Clarity OS T4.
+
+It contains various search terms and content that can be used to test the search functionality.
+
+Key terms:
+- search term
+- policy document
+- commitment statement
+- important information
+
+This document should be found when searching for any of the above terms.
+
+The search functionality should be able to locate this file and provide citations with line numbers.

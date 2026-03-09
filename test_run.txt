@@ -1,0 +1,146 @@
+# Clarity OS T4 - Essential Test Commands
+# Copy and paste these commands to test all functionality
+
+# ===========================================
+# 1. SYSTEM HEALTH CHECK
+# ===========================================
+python -m clarity.main health
+
+# ===========================================
+# 2. BASIC SEARCH TESTS
+# ===========================================
+
+# Search for "policy" in test documents
+python -m clarity.main search --root test_docs --query "policy"
+
+# Search for "security" with more context lines
+python -m clarity.main search --root test_docs --query "security" --context 3
+
+# Case-sensitive search for "Security" (capital S)
+python -m clarity.main search --root test_docs --query "Security" --case-sensitive
+
+# Regex search for multiple terms
+python -m clarity.main search --root test_docs --query "security|encryption" --regex
+
+# Search current directory for "test"
+python -m clarity.main search --root . --query "test"
+
+# ===========================================
+# 3. ASK COMMAND TESTS (Search + Summarize)
+# ===========================================
+
+# Ask about encryption with citations
+python -m clarity.main ask --root test_docs --question "encryption"
+
+# Ask about policy commitments
+python -m clarity.main ask --root test_docs --question "policy"
+
+# Ask about security measures
+python -m clarity.main ask --root test_docs --question "security"
+
+# Ask with specific file types only
+python -m clarity.main ask --root . --question "data" --globs "**/*.csv"
+
+# ===========================================
+# 4. CSV FILE SEARCH TESTS
+# ===========================================
+
+# Search CSV files for "engineering"
+python -m clarity.main search --root . --query "engineering" --globs "**/*.csv"
+
+# Search CSV files for "marketing"
+python -m clarity.main search --root . --query "marketing" --globs "**/*.csv"
+
+# Search CSV files for "security"
+python -m clarity.main search --root . --query "security" --globs "**/*.csv"
+
+# ===========================================
+# 5. SOURCES COMMAND TESTS
+# ===========================================
+
+# Show coverage report from last search
+python -m clarity.main sources --last
+
+# ===========================================
+# 6. LIMITS AND BOUNDARIES TESTS
+# ===========================================
+
+# Test with small limits (max 10 files, 5 matches)
+python -m clarity.main search --root . --query "test" --max-files 10 --max-matches 5
+
+# Search only Python files
+python -m clarity.main search --root . --query "python" --globs "**/*.py"
+
+# Search only markdown files
+python -m clarity.main search --root . --query "clarity" --globs "**/*.md"
+
+# ===========================================
+# 7. ADVANCED SEARCH TESTS
+# ===========================================
+
+# Search with 1 line context
+python -m clarity.main search --root test_docs --query "policy" --context 1
+
+# Search with 5 lines context
+python -m clarity.main search --root test_docs --query "policy" --context 5
+
+# Search with case-sensitive and regex together
+python -m clarity.main search --root test_docs --query "Policy|Security" --case-sensitive --regex
+
+# ===========================================
+# 8. COMPREHENSIVE DEMO
+# ===========================================
+
+# Run complete demo script (tests all features)
+python demo_script.py
+
+# ===========================================
+# 9. UNIT TESTS (AUTOMATED TESTING)
+# ===========================================
+
+# Run all automated tests
+python -m pytest tests/ -v
+
+# Run tests with coverage
+python -m pytest tests/ -v --cov=clarity
+
+# ===========================================
+# 10. PERFORMANCE TESTS
+# ===========================================
+
+# Search entire project for common terms
+python -m clarity.main search --root . --query "import"
+
+# Search with many results expected
+python -m clarity.main search --root . --query "def"
+
+# ===========================================
+# EXPECTED RESULTS FOR EACH TEST
+# ===========================================
+
+# Health Check: Should show system status, dependencies, limits
+# Basic Search: Should show file paths, line numbers, snippets
+# Ask Command: Should show answer + citations + coverage
+# CSV Search: Should show row numbers and data context
+# Sources: Should show last search coverage report
+# Limits: Should respect max-files and max-matches constraints
+# Demo: Should show all features working together
+# Unit Tests: Should show 13 passing tests
+# Performance: Should handle larger searches efficiently
+
+# ===========================================
+# TROUBLESHOOTING COMMANDS
+# ===========================================
+
+# If any command fails, run health check first
+python -m clarity.main health
+
+# Check if test files exist
+dir test_docs
+dir test_data.csv
+
+# Verify Python path
+python --version
+
+# Check current directory
+pwd
