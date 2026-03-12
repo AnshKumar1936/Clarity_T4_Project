@@ -1,0 +1,132 @@
+## Search Results
+**Query:** policy
+**Found:** 13 matches
+
+### Matches
+**1.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\README_QUICKSTART.txt:36`
+```
+
+Find company policies:
+  Search for: "privacy policy"
+
+Find contract terms:
+```
+
+**2.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\demo_script.py:45`
+```
+    # 2. Basic Search
+    run_command(
+        'python -m clarity.main search --root "test_docs" --query "policy" --globs "**/*.md"',
+        "Search for 'policy' in markdown files"
+    )
+```
+
+**3.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\demo_script.py:46`
+```
+    run_command(
+        'python -m clarity.main search --root "test_docs" --query "policy" --globs "**/*.md"',
+        "Search for 'policy' in markdown files"
+    )
+```
+
+**4.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_docs\policy.md:1`
+```
+# Company Policy Document
+
+## Privacy Policy
+```
+
+**5.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_docs\policy.md:3`
+```
+# Company Policy Document
+
+## Privacy Policy
+
+We are committed to protecting user privacy and data security.
+```
+
+**6.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_docs\sample.txt:7`
+```
+Key terms:
+- search term
+- policy document
+- commitment statement
+- important information
+```
+
+**7.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:13`
+```
+# ===========================================
+
+# Search for "policy" in test documents
+python -m clarity.main search --root test_docs --query "policy"
+```
+
+**8.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:14`
+```
+
+# Search for "policy" in test documents
+python -m clarity.main search --root test_docs --query "policy"
+
+# Search for "security" with more context lines
+```
+
+**9.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:35`
+```
+python -m clarity.main ask --root test_docs --question "encryption"
+
+# Ask about policy commitments
+python -m clarity.main ask --root test_docs --question "policy"
+```
+
+**10.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:36`
+```
+
+# Ask about policy commitments
+python -m clarity.main ask --root test_docs --question "policy"
+
+# Ask about security measures
+```
+
+**11.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:82`
+```
+
+# Search with 1 line context
+python -m clarity.main search --root test_docs --query "policy" --context 1
+
+# Search with 5 lines context
+```
+
+**12.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:85`
+```
+
+# Search with 5 lines context
+python -m clarity.main search --root test_docs --query "policy" --context 5
+
+# Search with case-sensitive and regex together
+```
+
+**13.** `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4\test_run.txt:88`
+```
+
+# Search with case-sensitive and regex together
+python -m clarity.main search --root test_docs --query "Policy|Security" --case-sensitive --regex
+
+# ===========================================
+```
+
+### Coverage Report
+**Search Scope:**
+- Root: `C:\Users\kingr\OneDrive\Pictures\Desktop\Clarity Docs\T4`
+- Pattern: `**/*.txt`
+- Pattern: `**/*.md`
+- Pattern: `**/*.py`
+**Statistics:**
+- Files scanned: 22
+- Files with matches: 5
+**Limits Applied:**
+- max_files: 5000
+- max_matches: 2000
+- context_lines: 2
+### Confidence: high
+Found 13 matches across 5 files

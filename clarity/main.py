@@ -62,10 +62,11 @@ def main() -> int:
         parser.print_help()
         return 1
     
-    # Initialize config and check boot doc
+    # Initialize config and validate boot doc
     config = ClarityConfig()
-    if config.boot_doc_path and not Path(config.boot_doc_path).exists():
-        print(f"ERROR: Boot document not found at {config.boot_doc_path}", file=sys.stderr)
+    is_valid, error_message = config.validate_boot_doc()
+    if not is_valid:
+        print(f"ERROR: {error_message}", file=sys.stderr)
         return 1
     
     # Initialize search toolkit

@@ -23,10 +23,11 @@ from clarity.persistence import PersistenceManager, CoverageReport
 class SearchResult:
     """Represents a single search result match."""
     
-    def __init__(self, file_path: str, location: Union[int, str], snippet: str):
+    def __init__(self, file_path: str, location: Union[int, str], snippet: str, line_number: Optional[int] = None):
         self.file_path = file_path
         self.location = location  # line number for text, page/offset for docs
         self.snippet = snippet
+        self.line_number = line_number  # optional line number for context
 
 
 
@@ -142,6 +143,9 @@ class LocalSearchToolkit:
         list_result = self.list_dir(root, file_globs, max_files)
         files = list_result["files"]
         
+        # Sort files deterministically before scanning
+        files.sort()
+        
         matches = []
         coverage = list_result.get("coverage", CoverageReport())
         coverage.limits_applied["max_matches"] = max_matches
@@ -161,19 +165,32 @@ class LocalSearchToolkit:
                 if len(matches) >= max_matches:
                     break
                 
-                # Skip unsupported files for text search
-                if Path(file_path).suffix.lower() not in (
-                    self.config.TEXT_EXTENSIONS | self.config.CODE_EXTENSIONS | 
-                    self.config.DATA_EXTENSIONS
-                ):
-                    continue
+                file_ext = Path(file_path).suffix.lower()
                 
-                try:
-                    file_result = self.read_text_file(file_path)
-                    if not file_result["text"]:
+                # Handle different file types
+                if file_ext in self.config.DOCUMENT_EXTENSIONS:
+                    # Handle DOCX and PDF files
+                    if file_ext == '.docx':
+                        doc_result = self.extract_docx_text(file_path)
+                        if doc_result.get("error"):
+                            coverage.skipped_files.append(f"Skipped DOCX: {doc_result['error']}")
+                            continue
+                        text_content = doc_result.get("text", "")
+                        location_type = "paragraph"
+                    elif file_ext == '.pdf':
+                        pdf_result = self.extract_pdf_text(file_path)
+                        if pdf_result.get("error"):
+                            coverage.skipped_files.append(f"Skipped PDF: {pdf_result['error']}")
+                            continue
+                        text_content = pdf_result.get("text", "")
+                        location_type = "page"
+                    else:
                         continue
                     
-                    lines = file_result["text"].splitlines()
+                    if not text_content:
+                        continue
+                    
+                    lines = text_content.splitlines()
                     file_matches = []
                     
                     for line_num, line in enumerate(lines, 1):
@@ -188,19 +205,15 @@ class LocalSearchToolkit:
                             if search_query not in search_line:
                                 continue
                         
-                        # Extract context
-                        start_line = max(1, line_num - context_lines)
-                        end_line = min(len(lines), line_num + context_lines)
-                        context_lines_list = lines[start_line - 1:end_line]
-                        snippet = "\n".join(context_lines_list)
-                        
+                        # Create match result
                         match = SearchResult(
                             file_path=file_path,
-                            location=line_num,
-                            snippet=snippet
+                            location=f"{location_type} {line_num}",
+                            snippet=self._extract_context(lines, line_num, context_lines),
+                            line_number=line_num
                         )
-                        matches.append(match)
                         file_matches.append(match)
+                        matches.append(match)
                         
                         if len(matches) >= max_matches:
                             break
@@ -208,8 +221,55 @@ class LocalSearchToolkit:
                     if file_matches:
                         matched_files_count += 1
                 
-                except Exception as e:
-                    coverage.errors.append(f"Error searching {file_path}: {e}")
+                elif file_ext in (self.config.TEXT_EXTENSIONS | self.config.CODE_EXTENSIONS | self.config.DATA_EXTENSIONS):
+                    # Handle text, code, and data files
+                    try:
+                        file_result = self.read_text_file(file_path)
+                        if not file_result["text"]:
+                            continue
+                        
+                        lines = file_result["text"].splitlines()
+                        file_matches = []
+                        
+                        for line_num, line in enumerate(lines, 1):
+                            # Check for match
+                            if regex:
+                                if pattern.search(line):
+                                    pass  # Match found
+                                else:
+                                    continue
+                            else:
+                                search_line = line if case_sensitive else line.lower()
+                                if search_query not in search_line:
+                                    continue
+                            
+                            # Extract context
+                            start_line = max(1, line_num - context_lines)
+                            end_line = min(len(lines), line_num + context_lines)
+                            context_lines_list = lines[start_line - 1:end_line]
+                            snippet = "\n".join(context_lines_list)
+                            
+                            match = SearchResult(
+                                file_path=file_path,
+                                location=line_num,
+                                snippet=snippet,
+                                line_number=line_num
+                            )
+                            file_matches.append(match)
+                            matches.append(match)
+                            
+                            if len(matches) >= max_matches:
+                                break
+                        
+                        if file_matches:
+                            matched_files_count += 1
+                            
+                    except Exception as e:
+                        coverage.skipped_files.append(f"Error reading {file_path}: {e}")
+                        continue
+                
+                else:
+                    # Skip unsupported file types
                     continue
         
         except Exception as e:
@@ -221,14 +281,23 @@ class LocalSearchToolkit:
         self._coverage_store.append(coverage)  # Store for sources command
         self.persistence.save_coverage_report(coverage)  # Persist for future CLI calls
         
+        # Sort matches deterministically before returning
+        matches.sort(key=lambda match: (match.file_path, match.location))
+        
         return {
             "matches": matches,
             "truncated": len(matches) >= max_matches,
             "coverage": coverage
         }
     
+    def _extract_context(self, lines: List[str], line_num: int, context_lines: int) -> str:
+        """Extract context lines around a match."""
+        start_line = max(1, line_num - context_lines)
+        end_line = min(len(lines), line_num + context_lines)
+        context_lines_list = lines[start_line - 1:end_line]
+        return "\n".join(context_lines_list)
+    
     def extract_docx_text(self, path: str) -> Dict[str, Any]:
-        """Extract text from DOCX file."""
         if not DOCX_AVAILABLE:
             return {
                 "text": None,

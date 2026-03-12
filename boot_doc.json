@@ -1,0 +1,20 @@
+{
+  "identity": {
+    "name": "Clarity OS T4",
+    "version": "4.0.0",
+    "description": "Local Search + Summarize with Citations"
+  },
+  "operating_rules": {
+    "read_only": true,
+    "local_only": true,
+    "no_autonomous_actions": true
+  },
+  "modes_personas": {
+    "default_mode": "search",
+    "personas": ["assistant", "searcher"]
+  },
+  "memory_rules": {
+    "persistence_enabled": true,
+    "max_memory_items": 1000
+  }
+}

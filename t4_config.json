@@ -1,0 +1,8 @@
+{
+  "max_files": 5000,
+  "max_matches": 2000,
+  "max_file_size_bytes": 10485760,
+  "context_lines": 2,
+  "allowlisted_roots": [],
+  "default_globs": "**/*.txt,**/*.md,**/*.py,**/*.csv,**/*.docx,**/*.pdf"
+}
